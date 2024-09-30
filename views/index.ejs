@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scraper de Mercado Libre</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .loader {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1050; /* Para asegurarnos de que aparezca por encima de todo */
+        }
+        
+        .loader img {
+            width: 100px; /* Tamaño de la imagen del loader */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Scraper de Mercado Libre</h1>
+
+        <form id="scrapeForm" action="/scrape" method="get">
+            <input type="text" name="url" placeholder="Ingresa la URL de Mercado Libre" required class="form-control">
+            <button type="submit" class="btn btn-primary mt-2">Scrapear</button>
+        </form>
+
+        <!-- Div de carga -->
+        <div class="loader" id="loader">
+            <img src="/bars-scale.svg" alt="Cargando..."> <!-- Asegúrate de que esta imagen esté disponible -->
+        </div>
+
+        <% if (data) { %>
+            <h2 class="mt-4">Resultados:</h2>
+            <p><strong>Kilómetros: </strong><%= data.kilometers %></p>
+            <p><strong>Descripción: </strong><%= data.description %></p>
+
+            <h3>Imágenes:</h3>
+            <div id="imageCarousel" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                    <% data.images.forEach((image, index) => { %>
+                        <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                            <img src="<%= image %>" class="d-block w-100" alt="Imagen" style="max-height: 400px; object-fit: cover;">
+                        </div>
+                    <% }) %>
+                </div>
+                <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+
+            <!-- Formulario para agregar comentario -->
+            <h3 class="mt-4">Agregar Comentario:</h3>
+            <form action="/ads/<%= data.adId %>/comments" method="POST">
+                <input type="text" name="nickname" placeholder="Ingresa tu apodo" required class="form-control">
+                <textarea name="comment" placeholder="Ingresa tu comentario" required class="form-control mt-2"></textarea>
+                <button type="submit" class="btn btn-primary mt-2">Agregar Comentario</button>
+            </form>
+
+        <% } %>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script>
+        $('#scrapeForm').on('submit', function() {
+            $('#loader').show(); // Mostrar el loader
+        });
+    </script>
+</body>
+</html>

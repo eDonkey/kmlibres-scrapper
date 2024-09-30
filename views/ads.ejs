@@ -1,0 +1,129 @@
+<!-- views/ads.ejs -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anuncios Guardados</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Estilo para el carrusel para mantener un tamaño fijo */
+        .carousel {
+            max-width: 300px; 
+            max-height: 200px; 
+            overflow: hidden; 
+        }
+        
+        .carousel-inner img {
+            width: 100%; 
+            height: auto; 
+            object-fit: cover; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Anuncios Guardados</h1>
+        <a href="/" class="btn btn-secondary mt-2">Volver al Inicio</a>
+        <table class="table mt-3">
+            <thead>
+                <tr>
+                    <th>ID del Anuncio</th>
+                    <th>Kilómetros</th>
+                    <th>Descripción</th>
+                    <th>Fecha de Scraping</th>
+                    <th>Imágenes</th>
+                    <th>Comentarios</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (ads.length) { %>
+                    <% ads.forEach(ad => { %>
+                        <tr>
+                            <td><%= ad.adId %></td>
+                            <td><%= ad.kilometers %></td>
+                            <td><%= ad.description %></td>
+                            <td><%= ad.timestamp.toLocaleString() %></td>
+                            <td>
+                                <div id="carouselImage<%= ad.adId %>" class="carousel slide" data-ride="carousel">
+                                    <div class="carousel-inner">
+                                        <% ad.images.forEach((image, index) => { %>
+                                            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                                <img src="<%= image %>" class="d-block" alt="Imagen" style="object-fit: cover;">
+                                            </div>
+                                        <% }) %>
+                                    </div>
+                                    <a class="carousel-control-prev" href="#carouselImage<%= ad.adId %>" role="button" data-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                    <a class="carousel-control-next" href="#carouselImage<%= ad.adId %>" role="button" data-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </div>
+                            </td>
+                            <td>
+                                <!-- Formulario para agregar comentarios -->
+                                <form action="/ads/<%= ad.adId %>/comments" method="POST" class="mt-2">
+                                    <input type="text" name="nickname" placeholder="Tu apodo" required class="form-control">
+                                    <textarea name="comment" placeholder="Tu comentario" required class="form-control mt-2"></textarea>
+                                    <button type="submit" class="btn btn-primary mt-2">Agregar Comentario</button>
+                                </form>
+
+                                <!-- Mostrar comentarios existentes -->
+                                <ul class="list-group mt-2">
+                                    <% ad.comments.forEach(comment => { %>
+                                        <li class="list-group-item">
+                                            <strong><%= comment.nickname %></strong>: <%= comment.comment %>
+                                            <br>
+                                            <small><%= comment.timestamp.toLocaleString() %></small>
+                                        </li>
+                                    <% }) %>
+                                </ul>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="6" class="text-center">No hay anuncios guardados.</td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+
+        <!-- Controles de Paginación -->
+        <% if (totalPages > 1) { %>
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <% if (page > 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/ads?page=<%= page - 1 %>" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    <% } %>
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= i === page ? 'active' : '' %>">
+                            <a class="page-link" href="/ads?page=<%= i %>"><%= i %></a>
+                        </li>
+                    <% } %>
+                    <% if (page < totalPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="/ads?page=<%= page + 1 %>" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        <% } %>
+    </div>
+
+
+    <!-- jQuery y Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
