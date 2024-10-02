@@ -15,7 +15,8 @@ app.use(bodyParser.json());
 const PORT = 3000;
 
 // Conectar a MongoDB
-mongoose.connect('mongodb://admin:78895082b9a264f3b161f8bcfaef540641a459161aa30a6a@localhost:27017/miScraperDB', {
+//mongoose.connect('mongodb://localhost:27017/miScraperDB', {
+mongoose.connect('mongodb+srv://doadmin:163w5X90EHp8MZ7f@db-kmts-c03179a5.mongo.ondigitalocean.com/admin?tls=true&authSource=admin', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => {
